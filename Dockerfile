@@ -6,10 +6,10 @@ RUN apt-get -qq update \
 
 # get packages
 COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+RUN pip3 install --upgrade -r requirements.txt
 
 COPY . /apps
 
 WORKDIR /apps
 
-ENTRYPOINT ["python", "sheets.py"]
+ENTRYPOINT ["python", "main.py"]
