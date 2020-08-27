@@ -36,11 +36,11 @@ variable "pubsub_topic_id" {
 variable "function_name" {
   type        = string
   default     = "gcp-route-updates"
-  description = "Name of the function" 
+  description = "Name of the function"
 }
 
 variable "entry_point" {
   type        = string
   default     = "route_pubsub"
-  description = "Function that serves the entry point." 
+  description = "Function that serves the entry point."
 }

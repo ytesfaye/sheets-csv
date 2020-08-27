@@ -86,3 +86,12 @@ module "cloud_scheduler" {
   pub_message           = jsonencode(var.sheet_information)
   description           = "Scheduler to keep the dashboard up-to-date."
 }
+
+module "bigquery" {
+  source              = "./modules/bigquery"
+  project_id          = var.project_id
+  dataset_id          = var.dataset_id
+  dataset_description = var.dataset_description
+  location            = var.location
+  mck_views           = var.mck_views
+}
