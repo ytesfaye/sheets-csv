@@ -5,12 +5,12 @@ variable "region" {
 
 variable "project_id" {
   type    = string
-  default = "my-project-1"
+  default = "ic-iaprep-mgmt-project-a4d4"
 }
 
 variable "prefix" {
   type    = string
-  default = ""
+  default = "dev"
 }
 
 variable "labels" {
@@ -91,34 +91,27 @@ variable "mck_views" {
   description = "list of views needs to created"
   default = {
     mck_dc_dashboard     = <<EOF
-  SELECT main_table.DC, 
-  Program.Count AS Planned_InFlight_Migration,
+  SELECT DC, 
+  SUM(Planned_InFlight_Migration) AS Planned_InFlight_Migration,
   SUM(Sunset_in_Place) AS Sunset_in_Place , 
   SUM( Migrate_to_Azure) AS Migrate_to_Azure ,
   SUM( Modernization) AS Modernization,
   SUM( Migrate_to_GCP) AS Migrate_to_GCP,
-  main_table.Date
+  SUM(UnAccessed) AS UnAccessed,
+  Date
   FROM (
         SELECT  DISTINCT CASE WHEN Source = 'UNIPRIX2' OR Source = 'UNIPRIX1' THEN 'UNIPRIX' ELSE Source END As DC, 
-        
-        (countif(Sunset_in_Place = 'TRUE')) AS Sunset_in_Place, 
-        countif(Migrate_to_Azure = 'TRUE') AS Migrate_to_Azure,  
-        countif(Modernization = 'TRUE') AS Modernization,
-        countif(Migrate_to_GCP = 'TRUE') AS Migrate_to_GCP,
-        PARSE_DATE("%Y%m%d",_TABLE_SUFFIX) as Date 
+        COUNTIF( Has_separate_project_or_effort = 'TRUE') AS Planned_InFlight_Migration,
+        COUNTIF(Sunset_in_Place = 'TRUE') AS Sunset_in_Place, 
+        COUNTIF(Migrate_to_Azure = 'TRUE') AS Migrate_to_Azure,  
+        COUNTIF(Modernization = 'TRUE') AS Modernization,
+        COUNTIF(Migrate_to_GCP = 'TRUE') AS Migrate_to_GCP,
+        COUNTIF(Unassessed = 'TRUE') AS UnAccessed,
+        PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date 
         FROM `ic-iaprep-mgmt-project-a4d4.mck_dc_workloads.dc_all_*`
-        GROUP BY Source, _TABLE_SUFFIX ) AS main_table
-        JOIN  
-        (
-           SELECT  DISTINCT Upper(Data_Center) As DC, 
-           countif(Data_Center = Data_Center) AS Count, 
-           PARSE_DATE("%Y%m%d",_TABLE_SUFFIX) as Date 
-           FROM `ic-iaprep-mgmt-project-a4d4.mck_dc_workloads.dc_program_*` 
-           GROUP BY  Data_Center, _TABLE_SUFFIX
-           ORDER BY Date
-        ) AS Program ON main_table.DC = UPPER(Program.DC) 
-        AND main_table.Date =  Program.Date 
-  GROUP BY DC, Date,Planned_InFlight_Migration
+        GROUP BY Source, _TABLE_SUFFIX 
+        ) 
+  GROUP BY DC, Date
 EOF
     mck_dc_all_workloads = <<EOF
 SELECT  'Cogent' as dc, Unconfirmed_App, Application, Disposition, CAST(Server_Count AS INT64) AS Server_Count , CAST(Desktop_Count AS INT64) AS Desktop_Count ,PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date FROM `ic-iaprep-mgmt-project-a4d4.mck_dc_workloads.dc_cogent_*` union all 
@@ -126,5 +119,46 @@ SELECT  'Markham' as dc,Unconfirmed_App, Application, Disposition, CAST(Server_C
 SELECT  'Unipri' as dc, Unconfirmed_App, Application, Disposition, CAST(Server_Count AS INT64) AS Server_Count , CAST(Desktop_Count AS INT64) AS Desktop_Count ,PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date FROM `ic-iaprep-mgmt-project-a4d4.mck_dc_workloads.dc_uniprix_*` union all 
 SELECT  'Viscount' as dc, Unconfirmed_App, Application, Disposition, CAST(Server_Count AS INT64) AS Server_Count , CAST(Desktop_Count AS INT64) AS Desktop_Count ,PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date FROM `ic-iaprep-mgmt-project-a4d4.mck_dc_workloads.dc_viscount_*`
 EOF
+  }
+}
+
+/******************
+alerts variables
+*******************/
+
+variable "log_name" {
+  type    = string
+  default = "cloud-function-log-metrics"
+}
+
+variable "log_filter" {
+  type    = string
+  default = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central\" textPayload:\"crash\" OR \"failed\""
+}
+
+variable "display_name" {
+  type    = string
+  default = "alert-cloud-function-error"
+}
+
+variable "duration" {
+  type    = string
+  default = "60s"
+}
+
+variable "comparison" {
+  type    = string
+  default = "COMPARISON_GT"
+}
+
+variable "threshold_value" {
+  type    = string
+  default = "0.001"
+}
+
+variable "notification_email_list" {
+  type = map(string)
+  default = {
+    ashwani-sharma = "ashwani.sharma@mavewave.com"
   }
 }
