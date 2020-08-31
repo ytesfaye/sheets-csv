@@ -133,7 +133,7 @@ variable "log_name" {
 
 variable "log_filter" {
   type    = string
-  default = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central\" textPayload:\"crash\" OR \"failed\""
+  default = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central1\" textPayload:\"crash\" OR \"failed\""
 }
 
 variable "display_name" {
