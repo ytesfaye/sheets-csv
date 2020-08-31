@@ -13,7 +13,7 @@ resource "google_logging_metric" "function_metric" {
 }
 
 /*******************************
-  Monitoring notication channel
+  Monitoring notification channel
 *******************************/
 
 resource "google_monitoring_notification_channel" "compute_email_notification" {
