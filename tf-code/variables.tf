@@ -160,5 +160,6 @@ variable "notification_email_list" {
   type = map(string)
   default = {
     ashwani-sharma = "ashwani.sharma@mavewave.com"
+    travis-mcvey =  "travis.mcvey@mavenwave.com"
   }
 }
