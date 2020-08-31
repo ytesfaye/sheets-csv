@@ -153,7 +153,7 @@ variable "comparison" {
 
 variable "threshold_value" {
   type    = string
-  default = "0.001"
+  default = "1"
 }
 
 variable "notification_email_list" {
