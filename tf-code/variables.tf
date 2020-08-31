@@ -153,13 +153,13 @@ variable "comparison" {
 
 variable "threshold_value" {
   type    = string
-  default = "1"
+  default = "0.001"
 }
 
 variable "notification_email_list" {
   type = map(string)
   default = {
-    ashwani-sharma = "ashwani.sharma@mavewave.com"
+    ashwani-sharma = "ashwani.sharma@mavenwave.com"
     travis-mcvey =  "travis.mcvey@mavenwave.com"
   }
 }
