@@ -95,3 +95,16 @@ module "bigquery" {
   location            = var.location
   mck_views           = var.mck_views
 }
+
+module "alerts" {
+  source                  = "./modules/alerts"
+  project_id              = var.project_id
+  log_name                = var.log_name
+  log_filter              = var.log_filter
+  workspace_id            = var.project_id
+  notification_email_list = var.notification_email_list
+  display_name            = var.display_name
+  duration                = var.duration
+  comparison              = var.comparison
+  threshold_value         = var.threshold_value
+}
