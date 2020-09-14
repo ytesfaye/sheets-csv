@@ -5,7 +5,7 @@ variable "region" {
 
 variable "project_id" {
   type    = string
-  default = "ic-iaprep-mgmt-project-a4d4"
+  default = "mig-dashboard-dev-e918"
 }
 
 variable "prefix" {

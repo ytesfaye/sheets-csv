@@ -18,11 +18,6 @@ variable "object_name" {
   description = "Zip name within the bucket with the source code."
 }
 
-variable "connector_name" {
-  type        = string
-  description = "VPC connector name for the function to have network connectivity."
-}
-
 variable "service_account_email" {
   type        = string
   description = "Service Account email the function will run as."
