@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "terraform-state-files"
+    bucket = "mck-terraform-state-files"
     prefix = "mig-dashboard-dev-e918/state"
   }
 }
