@@ -24,17 +24,16 @@ terraplan:
 	@docker run -it --mount type=bind,source=$(PWD),target=/apps/${FOLDER_MNT} \
 	-e GOOGLE_CREDENTIALS \
 	${IMAGE}:${JENKINS_BUILD} plan \
-	"-var-file=terraform.tfvars" ${FOLDERS} 
+	"-var-file=mck-terraform.tfvars" ${FOLDERS} 
 
 terraapply:
 	@docker run -it --mount type=bind,source=$(PWD),target=/apps/${FOLDER_MNT} \
 	-e GOOGLE_CREDENTIALS \
 	${IMAGE}:${JENKINS_BUILD} apply \
-	"-auto-approve -var-file=terraform.tfvars" ${FOLDERS} 
+	"-auto-approve -var-file=mck-terraform.tfvars" ${FOLDERS} 
 
 terradestroy:
 	@docker run -it --mount type=bind,source=$(PWD),target=/apps/${FOLDER_MNT} \
-	--mount type=bind,source=$(PWD)/.terraformrc,target=/home/terra/.terraformrc \
 	-e GOOGLE_CREDENTIALS \
 	${IMAGE}:${JENKINS_BUILD} destroy \
 	"-auto-approve -var-file=terraform.tfvars" ${FOLDERS}

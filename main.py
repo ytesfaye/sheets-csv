@@ -113,9 +113,7 @@ def wrapper(sample_data,credentials=None):
         if not sheet_service.values:
             print('No data found.')
         else:
-            for row in sheet_service.values:
-                # Print columns A and E, which correspond to indices 0 and 4.
-                print('%s, %s' % (row[0], row[4]))
+            print("sucessfully completed current sheet: {}".format(cur_sheet))
 
 def sheet_pubsub(event, context):
     """Background Cloud Function to be triggered by Pub/Sub.

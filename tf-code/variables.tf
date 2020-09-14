@@ -26,15 +26,15 @@ variable "cf_bucket_name" {
   default = "dashboard-update"
 }
 
-variable "cf_service_account_name" {
+variable "cf_service_account_email" {
   type    = string
-  default = "sa-dashboard-updater"
+  default = "sheets-test@ic-iaprep-mgmt-project-a4d4.iam.gserviceaccount.com"
 }
 
-variable "cf_service_account_roles" {
-  type    = set(string)
-  default = ["roles/bigquery.admin"]
-}
+#variable "cf_service_account_roles" {
+#  type    = set(string)
+#  default = ["roles/bigquery.admin"]
+#}
 
 variable "cf_subnet_ip" {
   type    = string
@@ -48,7 +48,7 @@ variable "sheet_information" {
     sheets   = list(map(string))
   })
   default = {
-    sheet_id = "my_private_sheet123456789"
+    sheet_id       = "my_private_sheet123456789"
     data_set = "myproject.data_set"
     sheets = [
       {
