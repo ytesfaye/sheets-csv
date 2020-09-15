@@ -64,7 +64,7 @@ resource "null_resource" "resource-to-wait-on" {
 }
 
 resource "google_pubsub_topic" "dashboard_topic" {
-  name    = "dashboard-update"
+  name    = "mck-dashboard-update"
   project = var.project_id
 
   labels = local.lower_case_labels
