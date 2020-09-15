@@ -5,7 +5,7 @@ variable "region" {
 
 variable "project_id" {
   type    = string
-  default = "ic-iaprep-mgmt-project-a4d4"
+  default = "mig-dashboard-dev-e918"
 }
 
 variable "prefix" {
@@ -23,7 +23,7 @@ variable "labels" {
 
 variable "cf_bucket_name" {
   type    = string
-  default = "dashboard-update"
+  default = "mck-dashboard-update"
 }
 
 variable "cf_service_account_email" {
