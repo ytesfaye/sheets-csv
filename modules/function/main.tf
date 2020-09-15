@@ -10,18 +10,14 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_object         = var.object_name
   timeout                       = 60
   entry_point                   = var.entry_point
-  # vpc_connector                 = var.connector_name
-  # vpc_connector_egress_settings = "ALL_TRAFFIC"
+  #vpc_connector                 = var.connector_name
+  #vpc_connector_egress_settings = "ALL_TRAFFIC"
   service_account_email         = var.service_account_email
   labels = {
     function_purpose = var.function_name
   }
 
-  environment_variables = {
-    _ROUTES_PREFIX  = "google-route-"
-    _ROUTE_PRIORITY = 100
-    _NEXT_HOP       = "default-internet-gateway"
-  }
+  environment_variables = var.environment_variables
 
   event_trigger {
     event_type = "google.pubsub.topic.publish"
