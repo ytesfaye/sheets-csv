@@ -12,48 +12,20 @@ resource "google_storage_bucket_object" "archive" {
   source = "files/Archive.zip"
 }
 
-/******************************************
- Service Account and permissions to run 
- the function.
- *****************************************/
-#resource "google_service_account" "service_account" {
-#  account_id   = "${var.prefix}-${var.cf_service_account_name}"
-#  display_name = var.cf_service_account_name
-#  project      = var.project_id
-#}
+# Does not have permission, these apis are already enabled. 
 
-#resource "google_project_iam_binding" "router-updater-role-membership" {
-#  for_each = var.cf_service_account_roles
-
+# resource "google_project_service" "pubsub" {
 #  project = var.project_id
-#  role    = each.value
-#  members = ["serviceAccount:${google_service_account.service_account.email}"]
-#}
+#  service = "pubsub.googleapis.com"
+#  disable_dependent_services = true
+# }
 
-# Configure networking requirements
-#module "networking" {
-#  source     = "./modules/networking"
-#  project_id = var.project_id
-#  region     = var.region
-#  subnet_ip  = var.cf_subnet_ip
-#}
+# resource "google_project_service" "cloud_scheduler" {
+#  project = var.project_id
+#  service = "cloudscheduler.googleapis.com"
+#  disable_dependent_services = true
+# }
 
-resource "google_project_service" "pubsub" {
- project = var.project_id
- service = "pubsub.googleapis.com"
- disable_dependent_services = true
-}
-
-resource "google_project_service" "cloud_scheduler" {
- project = var.project_id
- service = "cloudscheduler.googleapis.com"
- disable_dependent_services = true
-}
-
-#resource "google_app_engine_application" "app" {
-#  project     = var.project_id
-#  location_id = var.app_location
-#}
 
 # ensures the api is active and ready before deploying vpc connector
 resource "null_resource" "resource-to-wait-on" {
@@ -75,7 +47,6 @@ module "cloud_function" {
   source                = "./modules/function"
   project_id            = var.project_id
   bucket_name           = google_storage_bucket.bucket.name
-  #connector_name        = module.networking.connector_name
   object_name           = google_storage_bucket_object.archive.name
   region                = var.region
   service_account_email = var.cf_service_account_email
