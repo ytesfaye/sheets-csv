@@ -1,6 +1,6 @@
 variable "region" {
   type    = string
-  default = "us-central1"
+  default = "northamerica-northeast1"
 }
 
 variable "project_id" {
@@ -30,11 +30,6 @@ variable "cf_service_account_email" {
   type    = string
   default = "mig-dashboard-dev-e918-1@mig-dashboard-dev-e918.iam.gserviceaccount.com"
 }
-
-#variable "cf_service_account_roles" {
-#  type    = set(string)
-#  default = ["roles/bigquery.admin"]
-#}
 
 variable "cf_subnet_ip" {
   type    = string
