@@ -18,6 +18,11 @@ variable "object_name" {
   description = "Zip name within the bucket with the source code."
 }
 
+#variable "connector_name" {
+#  type        = string
+#  description = "VPC connector name for the function to have network connectivity."
+#}
+
 variable "service_account_email" {
   type        = string
   description = "Service Account email the function will run as."
@@ -37,5 +42,15 @@ variable "function_name" {
 variable "entry_point" {
   type        = string
   default     = "route_pubsub"
-  description = "Function that serves the entry point."
+  description = "Function that serves the entry point." 
 }
+
+variable "environment_variables" {
+    type    = map(string)
+    default = {
+      _ROUTES_PREFIX  = "google-route-"
+      _ROUTE_PRIORITY = 100
+      _NEXT_HOP       = "default-internet-gateway"
+    }
+    description = "Environment variables for the function"
+  }
