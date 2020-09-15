@@ -27,13 +27,13 @@ resource "google_storage_bucket_object" "archive" {
 # }
 
 
-# ensures the api is active and ready before deploying vpc connector
-resource "null_resource" "resource-to-wait-on" {
-  provisioner "local-exec" {
-    command = "sleep ${local.wait-time}"
-  }
-  depends_on = [google_project_service.pubsub, google_project_service.cloud_scheduler]
-}
+# # ensures the api is active and ready before deploying vpc connector
+# resource "null_resource" "resource-to-wait-on" {
+#   provisioner "local-exec" {
+#     command = "sleep ${local.wait-time}"
+#   }
+#   depends_on = [google_project_service.pubsub, google_project_service.cloud_scheduler]
+# }
 
 resource "google_pubsub_topic" "dashboard_topic" {
   name    = "mck-dashboard-update"
