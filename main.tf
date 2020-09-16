@@ -58,7 +58,7 @@ module "cloud_function" {
 
 module "cloud_scheduler" {
   source                = "./modules/scheduler"
-  name                  = "gcp-dashboard-scheduler-001"
+  name                  = "mck-dashboard-scheduler-001"
   target                = module.cloud_function.url
   project_id            = var.project_id
   region                = var.region
