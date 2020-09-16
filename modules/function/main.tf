@@ -8,7 +8,7 @@ resource "google_cloudfunctions_function" "function" {
   available_memory_mb   = 256
   source_archive_bucket = var.bucket_name
   source_archive_object = var.object_name
-  timeout               = 60
+  timeout               = 540
   entry_point           = var.entry_point
   #vpc_connector                 = var.connector_name
   #vpc_connector_egress_settings = "ALL_TRAFFIC"
