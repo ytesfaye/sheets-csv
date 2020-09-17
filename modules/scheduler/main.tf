@@ -1,4 +1,4 @@
-resource "google_cloud_scheduler_job" "route_update_1" {
+resource "google_cloud_scheduler_job" "function_pubsub" {
   name        = var.name
   description = var.description
   schedule    = "0 1 * * *"
