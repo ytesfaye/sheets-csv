@@ -18,25 +18,22 @@ The organization of the project is as follows. Since most of the items are speci
 ├── main.tf
 ├── modules
 │   ├── alerts
+│   │   ├── README.md
 │   │   ├── main.tf
 │   │   └── variables.tf
 │   ├── bigquery
+│   │   ├── README.md
 │   │   ├── main.tf
 │   │   └── variables.tf
 │   ├── function
+│   │   ├── README.md
 │   │   ├── main.tf
 │   │   ├── outputs.tf
 │   │   └── variables.tf
-│   ├── networking
-│   │   ├── main.tf
-│   │   ├── outputs.tf
-│   │   └── variables.tf
-│   ├── scheduler
-│   │   ├── main.tf
-│   │   ├── outputs.tf
-│   │   └── variables.tf
-│   └── service-account-access
+│   └── scheduler
+│       ├── README.md
 │       ├── main.tf
+│       ├── outputs.tf
 │       └── variables.tf
 ├── provider.tf
 ├── resources
