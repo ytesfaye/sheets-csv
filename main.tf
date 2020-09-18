@@ -30,17 +30,18 @@ module "cloud_function" {
   pubsub_topic_id       = google_pubsub_topic.dashboard_topic.id
   entry_point           = "sheet_pubsub"
   function_name         = "dashboard_update"
+  function_mem_amount   = var.function_mem_amount
   environment_variables = {}
 }
 
 module "cloud_scheduler" {
-  source                = "./modules/scheduler"
-  name                  = "mck-dashboard-scheduler-001"
-  project_id            = var.project_id
-  region                = var.region
-  pubsub_topic_id       = google_pubsub_topic.dashboard_topic.id
-  pub_message           = jsonencode(var.sheet_information)
-  description           = "Scheduler to keep the dashboard up-to-date."
+  source          = "./modules/scheduler"
+  name            = "mck-dashboard-scheduler-001"
+  project_id      = var.project_id
+  region          = var.region
+  pubsub_topic_id = google_pubsub_topic.dashboard_topic.id
+  pub_message     = jsonencode(var.sheet_information)
+  description     = "Scheduler to keep the dashboard up-to-date."
 }
 
 module "bigquery" {

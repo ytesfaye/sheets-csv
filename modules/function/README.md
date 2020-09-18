@@ -20,6 +20,7 @@ No requirements.
 | entry\_point | The specific entry function that serves as the entry point. | `string` | n/a | yes |
 | environment\_variables | Environment variables for the function | `map(string)` | `{}` | no |
 | function\_name | Name of the Cloud Function | `string` | n/a | yes |
+| function\_mem\_amount | Amount of memory to allocate to the cloud function. | `number` | `256` | no |
 | object\_name | Zip name within the bucket with the source code. | `string` | n/a | yes |
 | project\_id | GCP Project id to deploy the function to. | `string` | n/a | yes |
 | pubsub\_topic\_id | Name of the pub/sub to trigger the function. | `string` | n/a | yes |
