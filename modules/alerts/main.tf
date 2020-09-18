@@ -38,7 +38,7 @@ resource "google_monitoring_alert_policy" "function_alert_policy" {
   conditions {
     display_name = var.display_name
     condition_threshold {
-      filter          = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.function_metric.name}"\" AND resource.type=\"cloud_function\""
+      filter          = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.function_metric.name}\" AND resource.type=\"cloud_function\""
       duration        = var.duration
       comparison      = var.comparison
       threshold_value = var.threshold_value
