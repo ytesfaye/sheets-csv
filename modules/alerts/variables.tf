@@ -43,12 +43,6 @@ variable "per_series_aligner" {
   description = "Advanced aggregration aligner"
 }
 
-variable "cross_series_reducer" {
-  type        = string
-  default     = "REDUCE_NONE"
-  description = "cross serier reducer"
-}
-
 variable "document_content" {
   type    = string
   default = "This is notify that alert condition $${condition.display_name} has generated this alert for the policy $${metric.display_name}."
