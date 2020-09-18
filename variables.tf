@@ -132,7 +132,7 @@ EOF
     SELECT Source, Server, OS, Normalized_OS, Power_State, Application_Lookup, Confirmed_Application, MW_Project_Name, Sunset_in_Place,
     Citrix, Modernization, Migrate_to_Azure, Migrate_to_GCP, Unassessed, Migration_Scheduled, Migration_Succeeded, In_flight_Initiative,
     Project_Owner, Tech_Owner, BAP_ID, Lean_IX_ID, Archer_ID, Host_CPU, Host_Mem,Allocated_Storage,Rationale, Server_Function_Notes, 
-    Wave, Wave_Order, Environment,Destination_Project,Project_Request_ID, PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date
+    Wave, Wave_Order, Environment,Destination_Project,Project_Request_ID, Data_Center, Destination, Program_Status, PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date
   ,(case 
       when Sunset_in_Place = 'TRUE' then 'Sunset'
       when Citrix = 'TRUE' then 'Citrix'
