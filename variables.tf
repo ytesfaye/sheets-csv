@@ -1,16 +1,19 @@
 variable "region" {
-  type    = string
-  default = "northamerica-northeast1"
+  type        = string
+  default     = "northamerica-northeast1"
+  description = "Region to deploy the resources to." 
 }
 
 variable "project_id" {
-  type    = string
-  default = "mig-dashboard-dev-e918"
+  type        = string
+  default     = "mig-dashboard-dev-e918"
+  description = "Project to deploy the resources to."
 }
 
 variable "prefix" {
-  type    = string
-  default = "dev"
+  type        = string
+  default     = "dev"
+  description = "Prefix that resources will be created with."
 }
 
 variable "labels" {
@@ -22,13 +25,21 @@ variable "labels" {
 }
 
 variable "cf_bucket_name" {
-  type    = string
-  default = "mck-dashboard-update"
+  type        = string
+  default     = "mck-dashboard-update"
+  description = "Bucket that the cloud function Archive.zip will be uploaded to."
+}
+
+variable "pubsub_topic" {
+  type        = string
+  default     = "mck-dashboard-update"
+  description = "Topic that is created for the cloud scheduler and function to interact"
 }
 
 variable "cf_service_account_email" {
-  type    = string
-  default = "mig-dashboard-dev-e918-1@mig-dashboard-dev-e918.iam.gserviceaccount.com"
+  type        = string
+  default     = "mig-dashboard-dev-e918-1@mig-dashboard-dev-e918.iam.gserviceaccount.com"
+  description = "Service account for the cloud function to 'runas'"
 }
 
 
@@ -68,27 +79,26 @@ variable "sheet_information" {
       }
     ]
   }
-}
-
-variable "app_location" {
-  type    = string
-  default = "us-central"
+  description = "The Google Sheet ID, bigquery dataset to upload the sheet id to, and then specific sheets and ranges to read from."
 }
 
 /************************
 bigquery variables 
 **************************/
 variable "dataset_id" {
+  type        = string
   default     = "mck_dashboard_data"
   description = "dashboard dataset id"
 }
 
 variable "dataset_description" {
+  type        = string
   default     = "This is mckesson databoard dataset"
   description = "description of the dataset"
 }
 
 variable "location" {
+  type        = string
   default     = "US"
   description = "dataset location"
 }
@@ -169,33 +179,39 @@ alerts variables
 *******************/
 
 variable "log_name" {
-  type    = string
-  default = "cloud-function-log-metrics"
+  type        = string
+  default     = "cloud-function-log-metrics"
+  description = "Log for the Alerts to watch"
 }
 
 variable "log_filter" {
-  type    = string
-  default = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central1\" textPayload:\"crash\" OR \"failed\""
+  type        = string
+  default     = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central1\" textPayload:\"crash\" OR \"failed\""
+  description = "Filter for the alert to look for in the logs"
 }
 
 variable "display_name" {
-  type    = string
-  default = "alert-cloud-function-error"
+  type        = string
+  default     = "alert-cloud-function-error"
+  description = "Name of the alert."
 }
 
 variable "duration" {
-  type    = string
-  default = "60s"
+  type        = string
+  default     = "60s"
+  description = "How often to check."
 }
 
 variable "comparison" {
-  type    = string
-  default = "COMPARISON_GT"
+  type        = string
+  default     = "COMPARISON_GT"
+  description = "How to compare the log filters versus the threshold value"
 }
 
 variable "threshold_value" {
-  type    = string
-  default = "0.001"
+  type        = string
+  default     = "0.001"
+  description = "Threshold to be compared against" 
 }
 
 variable "notification_email_list" {
@@ -204,4 +220,5 @@ variable "notification_email_list" {
     ashwani-sharma = "ashwani.sharma@mavenwave.com"
     travis-mcvey   = "travis.mcvey@mavenwave.com"
   }
+  description = "Map of a name to an email for notifications."
 }
