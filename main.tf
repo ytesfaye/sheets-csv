@@ -36,10 +36,8 @@ module "cloud_function" {
 module "cloud_scheduler" {
   source                = "./modules/scheduler"
   name                  = "mck-dashboard-scheduler-001"
-  target                = module.cloud_function.url
   project_id            = var.project_id
   region                = var.region
-  service_account_email = var.cf_service_account_email
   pubsub_topic_id       = google_pubsub_topic.dashboard_topic.id
   pub_message           = jsonencode(var.sheet_information)
   description           = "Scheduler to keep the dashboard up-to-date."
