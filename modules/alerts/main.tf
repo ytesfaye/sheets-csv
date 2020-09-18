@@ -45,7 +45,6 @@ resource "google_monitoring_alert_policy" "function_alert_policy" {
       aggregations {
         alignment_period     = var.alignment_period
         per_series_aligner   = var.per_series_aligner
-        cross_series_reducer = var.cross_series_reducer
       }
       trigger {
         count = 1
