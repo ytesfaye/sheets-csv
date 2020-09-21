@@ -77,6 +77,7 @@ The following services have been enabled in the project:
 | dataset\_id | dashboard dataset id | `string` | `"mck_dashboard_data"` | no |
 | display\_name | Name of the alert. | `string` | `"alert-cloud-function-error"` | no |
 | duration | How often to check. | `string` | `"60s"` | no |
+| function\_mem\_amount | Amount of memory to allocate to the cloud function. | `number` | `512` | no |
 | labels | Map of labels for project | `map(string)` | {  "environment": "development"} | no |
 | location | dataset location | `string` | `"US"` | no |
 | log\_filter | Filter for the alert to look for in the logs | `string` | `"resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central1\" textPayload:\"crash\" OR \"failed\""` | no |

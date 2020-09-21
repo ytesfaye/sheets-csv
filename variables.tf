@@ -1,7 +1,7 @@
 variable "region" {
   type        = string
   default     = "northamerica-northeast1"
-  description = "Region to deploy the resources to." 
+  description = "Region to deploy the resources to."
 }
 
 variable "project_id" {
@@ -22,6 +22,12 @@ variable "labels" {
     environment = "development"
   }
   description = "Map of labels for project"
+}
+
+variable "function_mem_amount" {
+  type        = number
+  default     = 512
+  description = "Amount of memory to allocate to the cloud function."
 }
 
 variable "cf_bucket_name" {
@@ -211,7 +217,7 @@ variable "comparison" {
 variable "threshold_value" {
   type        = string
   default     = "0.001"
-  description = "Threshold to be compared against" 
+  description = "Threshold to be compared against"
 }
 
 variable "notification_email_list" {
