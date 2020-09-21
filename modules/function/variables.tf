@@ -18,6 +18,11 @@ variable "object_name" {
   description = "Zip name within the bucket with the source code."
 }
 
+variable "function_mem_amount" {
+  type     = number
+  default = 256
+  description = "Amount of memory to allocate to the cloud function."
+}
 
 variable "service_account_email" {
   type        = string
