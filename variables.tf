@@ -176,12 +176,12 @@ EOF
     WHERE  date = CURRENT_DATE()
     GROUP BY Source, date
 EOF
-    mck_cloud_physics_data = <<EOF
+    cloud_physics_data = <<EOF
     SELECT Tags, Application,	VM_State,Guest_OS,Process,Local_IP, 
     Local_Port, Formatted_Local_Port,Protocol,Target_Name,Target_Application,			
     Target_IP,Target_Port	,Formatted_Target_Port,Target_Address,State,
     PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date
-    FROM `ic-iaprep-mgmt-project-a4d4.mck_dc_workloads.cloud_physics_*`
+    FROM `mig-dashboard-dev-e918.mck_dashboard_data.mck_cloud_physics_*`
     order by Date   
 EOF
 
