@@ -48,6 +48,11 @@ variable "cf_service_account_email" {
   description = "Service account for the cloud function to 'runas'"
 }
 
+variable "function_name" {
+  type        = string
+  description = "Name of the cloud function"
+  default     = "dashboard_update"
+}
 
 variable "sheet_information" {
   type = object({
@@ -82,6 +87,25 @@ variable "sheet_information" {
       {
         name  = "dc_all"
         range = "Master Server Inventory!A1:BZ1000"
+      }
+    ]
+  }
+  description = "The Google Sheet ID, bigquery dataset to upload the sheet id to, and then specific sheets and ranges to read from."
+}
+
+variable "cloud_physics_sheet_info" {
+  type = object({
+    sheet_id = string
+    data_set = string
+    sheets   = list(map(string))
+  })
+  default = {
+    sheet_id = "1sYJr4lMW2Wds0XcYxirNPK5zZYiivEmwshHbATLh0DQ"
+    data_set = "mig-dashboard-dev-e918.mck_dashboard_data"
+    sheets = [
+      {
+        name  = "mck_cloud_physics"
+        range = "Uniprix Dependency Map!A7:Q13000"
       }
     ]
   }
@@ -176,7 +200,7 @@ EOF
     WHERE  date = CURRENT_DATE()
     GROUP BY Source, date
 EOF
-    cloud_physics_data = <<EOF
+    cloud_physics_data             = <<EOF
     SELECT VM_Name, Tags, Application,	VM_State,Guest_OS,Process,Local_IP, 
     Local_Port, Formatted_Local_Port,Protocol,Target_Name,Target_Application,			
     Target_IP,Target_Port	,Formatted_Target_Port,Target_Address,State,
@@ -196,12 +220,6 @@ variable "log_name" {
   type        = string
   default     = "cloud-function-log-metrics"
   description = "Log for the Alerts to watch"
-}
-
-variable "log_filter" {
-  type        = string
-  default     = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"northamerica-northeast1\" textPayload:\"crash\" OR \"failed\""
-  description = "Filter for the alert to look for in the logs"
 }
 
 variable "display_name" {

@@ -29,7 +29,7 @@ module "cloud_function" {
   service_account_email = var.cf_service_account_email
   pubsub_topic_id       = google_pubsub_topic.dashboard_topic.id
   entry_point           = "sheet_pubsub"
-  function_name         = "dashboard_update"
+  function_name         = var.function_name
   function_mem_amount   = var.function_mem_amount
   environment_variables = {}
 }
@@ -57,11 +57,22 @@ module "alerts" {
   source                  = "./modules/alerts"
   project_id              = var.project_id
   log_name                = var.log_name
-  log_filter              = var.log_filter
+  region                  = var.region
+  function_name           = var.function_name
   workspace_id            = var.project_id
   notification_email_list = var.notification_email_list
   display_name            = var.display_name
   duration                = var.duration
   comparison              = var.comparison
   threshold_value         = var.threshold_value
+}
+
+module "cloud_physics_scheduler" {
+  source          = "./modules/scheduler"
+  name            = "mck-cloud-physics-data-001"
+  project_id      = var.project_id
+  region          = var.region
+  pubsub_topic_id = google_pubsub_topic.dashboard_topic.id
+  pub_message     = jsonencode(var.cloud_physics_sheet_info)
+  description     = "Scheduler to import cloud physics data to BQ."
 }
