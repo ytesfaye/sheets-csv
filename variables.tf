@@ -200,7 +200,7 @@ variable "log_name" {
 
 variable "log_filter" {
   type        = string
-  default     = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central1\" textPayload:\"crash\" OR \"failed\""
+  default     = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"northamerica-northeast1\" textPayload:\"crash\" OR \"failed\""
   description = "Filter for the alert to look for in the logs"
 }
 

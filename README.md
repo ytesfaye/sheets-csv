@@ -49,6 +49,10 @@ The cloud function is inside `files/main.py` This function has two run options: 
 
 Terraform is the main part of this project and used to manage the entire architecture.
 
+## Access Requirement 
+
+To read the data from google sheet we need to share the google sheet with the service account, which is used to run cloud function. othewise will permission denied error. Also we need to mention the google sheet id from the sheet url in cloud scheduler payload (as a input to the cloud function.)
+
 ### Requirements
 
 The following services have been enabled in the project:
