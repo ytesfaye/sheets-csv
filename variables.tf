@@ -48,6 +48,11 @@ variable "cf_service_account_email" {
   description = "Service account for the cloud function to 'runas'"
 }
 
+variable "function_name" {
+  type        = string
+  description = "Name of the cloud function"
+  default     = "dashboard_update"
+}
 
 variable "sheet_information" {
   type = object({
