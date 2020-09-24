@@ -1,16 +1,19 @@
 variable "region" {
-  type    = string
-  default = "northamerica-northeast1"
+  type        = string
+  default     = "northamerica-northeast1"
+  description = "Region to deploy the resources to."
 }
 
 variable "project_id" {
-  type    = string
-  default = "mig-dashboard-dev-e918"
+  type        = string
+  default     = "mig-dashboard-dev-e918"
+  description = "Project to deploy the resources to."
 }
 
 variable "prefix" {
-  type    = string
-  default = "dev"
+  type        = string
+  default     = "dev"
+  description = "Prefix that resources will be created with."
 }
 
 variable "labels" {
@@ -21,16 +24,35 @@ variable "labels" {
   description = "Map of labels for project"
 }
 
+variable "function_mem_amount" {
+  type        = number
+  default     = 512
+  description = "Amount of memory to allocate to the cloud function."
+}
+
 variable "cf_bucket_name" {
-  type    = string
-  default = "mck-dashboard-update"
+  type        = string
+  default     = "mck-dashboard-update"
+  description = "Bucket that the cloud function Archive.zip will be uploaded to."
+}
+
+variable "pubsub_topic" {
+  type        = string
+  default     = "mck-dashboard-update"
+  description = "Topic that is created for the cloud scheduler and function to interact"
 }
 
 variable "cf_service_account_email" {
-  type    = string
-  default = "mig-dashboard-dev-e918-1@mig-dashboard-dev-e918.iam.gserviceaccount.com"
+  type        = string
+  default     = "mig-dashboard-dev-e918-1@mig-dashboard-dev-e918.iam.gserviceaccount.com"
+  description = "Service account for the cloud function to 'runas'"
 }
 
+variable "function_name" {
+  type        = string
+  description = "Name of the cloud function"
+  default     = "dashboard_update"
+}
 
 variable "sheet_information" {
   type = object({
@@ -68,27 +90,45 @@ variable "sheet_information" {
       }
     ]
   }
+  description = "The Google Sheet ID, bigquery dataset to upload the sheet id to, and then specific sheets and ranges to read from."
 }
 
-variable "app_location" {
-  type    = string
-  default = "us-central"
+variable "cloud_physics_sheet_info" {
+  type = object({
+    sheet_id = string
+    data_set = string
+    sheets   = list(map(string))
+  })
+  default = {
+    sheet_id = "1sYJr4lMW2Wds0XcYxirNPK5zZYiivEmwshHbATLh0DQ"
+    data_set = "mig-dashboard-dev-e918.mck_dashboard_data"
+    sheets = [
+      {
+        name  = "mck_cloud_physics"
+        range = "Uniprix Dependency Map!A7:Q13000"
+      }
+    ]
+  }
+  description = "The Google Sheet ID, bigquery dataset to upload the sheet id to, and then specific sheets and ranges to read from."
 }
 
 /************************
 bigquery variables 
 **************************/
 variable "dataset_id" {
+  type        = string
   default     = "mck_dashboard_data"
   description = "dashboard dataset id"
 }
 
 variable "dataset_description" {
+  type        = string
   default     = "This is mckesson databoard dataset"
   description = "description of the dataset"
 }
 
 variable "location" {
+  type        = string
   default     = "US"
   description = "dataset location"
 }
@@ -132,7 +172,7 @@ EOF
     SELECT Source, Server, OS, Normalized_OS, Power_State, Application_Lookup, Confirmed_Application, MW_Project_Name, Sunset_in_Place,
     Citrix, Modernization, Migrate_to_Azure, Migrate_to_GCP, Unassessed, Migration_Scheduled, Migration_Succeeded, In_flight_Initiative,
     Project_Owner, Tech_Owner, BAP_ID, Lean_IX_ID, Archer_ID, Host_CPU, Host_Mem,Allocated_Storage,Rationale, Server_Function_Notes, 
-    Wave, Wave_Order, Environment,Destination_Project,Project_Request_ID, PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date
+    Wave, Wave_Order, Environment,Destination_Project,Project_Request_ID, Data_Center, Destination, Program_Status, PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date
   ,(case 
       when Sunset_in_Place = 'TRUE' then 'Sunset'
       when Citrix = 'TRUE' then 'Citrix'
@@ -160,6 +200,14 @@ EOF
     WHERE  date = CURRENT_DATE()
     GROUP BY Source, date
 EOF
+    cloud_physics_data             = <<EOF
+    SELECT VM_Name, Tags, Application,	VM_State,Guest_OS,Process,Local_IP, 
+    Local_Port, Formatted_Local_Port,Protocol,Target_Name,Target_Application,			
+    Target_IP,Target_Port	,Formatted_Target_Port,Target_Address,State,
+    PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date
+    FROM `mig-dashboard-dev-e918.mck_dashboard_data.mck_cloud_physics_*`
+    order by Date   
+EOF
 
   }
 }
@@ -169,33 +217,33 @@ alerts variables
 *******************/
 
 variable "log_name" {
-  type    = string
-  default = "cloud-function-log-metrics"
-}
-
-variable "log_filter" {
-  type    = string
-  default = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central1\" textPayload:\"crash\" OR \"failed\""
+  type        = string
+  default     = "cloud-function-log-metrics"
+  description = "Log for the Alerts to watch"
 }
 
 variable "display_name" {
-  type    = string
-  default = "alert-cloud-function-error"
+  type        = string
+  default     = "alert-cloud-function-error"
+  description = "Name of the alert."
 }
 
 variable "duration" {
-  type    = string
-  default = "60s"
+  type        = string
+  default     = "60s"
+  description = "How often to check."
 }
 
 variable "comparison" {
-  type    = string
-  default = "COMPARISON_GT"
+  type        = string
+  default     = "COMPARISON_GT"
+  description = "How to compare the log filters versus the threshold value"
 }
 
 variable "threshold_value" {
-  type    = string
-  default = "0.001"
+  type        = string
+  default     = "0.001"
+  description = "Threshold to be compared against"
 }
 
 variable "notification_email_list" {
@@ -204,4 +252,5 @@ variable "notification_email_list" {
     ashwani-sharma = "ashwani.sharma@mavenwave.com"
     travis-mcvey   = "travis.mcvey@mavenwave.com"
   }
+  description = "Map of a name to an email for notifications."
 }

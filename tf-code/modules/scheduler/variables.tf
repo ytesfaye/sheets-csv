@@ -1,32 +1,30 @@
-variable "target" {
-  type = string
-}
-
 variable "name" {
-  type = string
+  type        = string
+  description = "Name of the Cloud Scheduler job."
 }
 
 variable "project_id" {
-  type = string
+  type        = string
+  description = "Project to deploy the resources to."
 }
 
 variable "region" {
-  type = string
-}
-
-variable "service_account_email" {
-  type = string
+  type        = string
+  description = "Region to deploy the scheduler into."
 }
 
 variable "pubsub_topic_id" {
-  type = string
+  type        = string
+  description = "Topic that is created for the cloud scheduler and function to interact"
 }
 
 variable "pub_message" {
-  type = string
+  type        = string
+  description = "Message to publish to the pubsub topic."
 }
 
 variable "description" {
-  type    = string
-  default = "job to keep gcp routes up to date"
+  type        = string
+  default     = "Job to initiate function Dashboard update"
+  description = "The description for the Cloud Scheduler job."
 }

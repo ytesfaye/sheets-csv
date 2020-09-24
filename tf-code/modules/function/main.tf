@@ -5,7 +5,7 @@ resource "google_cloudfunctions_function" "function" {
   region      = var.region
   runtime     = "python37"
 
-  available_memory_mb   = 256
+  available_memory_mb   = var.function_mem_amount
   source_archive_bucket = var.bucket_name
   source_archive_object = var.object_name
   timeout               = 540
