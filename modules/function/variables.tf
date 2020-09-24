@@ -19,8 +19,8 @@ variable "object_name" {
 }
 
 variable "function_mem_amount" {
-  type     = number
-  default = 256
+  type        = number
+  default     = 256
   description = "Amount of memory to allocate to the cloud function."
 }
 
@@ -45,7 +45,7 @@ variable "entry_point" {
 }
 
 variable "environment_variables" {
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
   description = "Environment variables for the function"
 }

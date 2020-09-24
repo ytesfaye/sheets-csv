@@ -11,10 +11,9 @@ variable "log_name" {
   description = "Log for the Alerts to watch"
 }
 
-variable "log_filter" {
+variable "function_name" {
   type        = string
-  default     = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central1\" textPayload:\"crash\" OR \"failed\""
-  description = "Filter for the alert to look for in the logs"
+  description = "name of the function used to created log based metrics"
 }
 
 variable "workspace_id" {
@@ -69,7 +68,12 @@ variable "comparison" {
 variable "threshold_value" {
   type        = string
   default     = "0.001"
-  description = "Threshold to be compared against" 
+  description = "Threshold to be compared against"
+}
+
+variable "region" {
+  type        = string
+  description = "Region used in the log filter"
 }
 
 

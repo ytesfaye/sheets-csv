@@ -10,7 +10,7 @@ variable "project_id" {
 
 variable "region" {
   type        = string
-  description = "Region to deploy the scheduler into." 
+  description = "Region to deploy the scheduler into."
 }
 
 variable "pubsub_topic_id" {
@@ -24,7 +24,7 @@ variable "pub_message" {
 }
 
 variable "description" {
-  type    = string
-  default = "Job to initiate function Dashboard update"
+  type        = string
+  default     = "Job to initiate function Dashboard update"
   description = "The description for the Cloud Scheduler job."
 }
