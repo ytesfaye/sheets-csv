@@ -1,0 +1,97 @@
+resources:
+- name: terraform-image
+  type: docker-image
+  source:
+    repository: hashicorp/terraform
+    tag: 0.12.29
+- name: git-clone-develop
+  type: git
+  source:
+    uri: git@github.com:mckesson/migration-mck-dashboard.git
+    branch: develop
+    private_key: ((dev/github_private_key.private_key))	
+- name: git-clone-master
+  type: git
+  source:
+    uri: git@github.com:mckesson/migration-mck-dashboard.git
+    branch: master
+    private_key: ((dev/github_private_key.private_key))	
+#- name: notify-error
+#  source:
+#    url: ((teams-fail))
+#  type: teams-notification
+#- name: notify-success
+#  source:
+#    url: ((teams-success))
+#  type: teams-notification	
+jobs:
+- name: terraform-dev-plan
+  public: true
+  plan:
+    - get: git-clone-develop
+      trigger: true
+    - get: terraform-image
+    - task: run-terraform-init-plan
+      image: terraform-image
+      config:
+        platform: linux
+        inputs: 
+        - name: git-clone-develop
+        params:
+         GOOGLE_CREDENTIALS: ((dev/tf_service_account_json))
+        run:
+          dir: git-clone-develop
+          path: sh
+          args:
+           - -exc
+           - terraform init; terraform plan 
+      #  outputs:
+        # - name: git-clone
+- name: terraform-dev-apply
+  public: true
+  plan:
+    - get: git-clone-master
+      #trigger: true
+    - get: terraform-image
+    - task: run-terraform-init-plan
+      image: terraform-image
+      config:
+        platform: linux
+        inputs: 
+        - name: git-clone-master
+        params:
+         GOOGLE_CREDENTIALS: ((dev/tf_service_account_json))
+        run:
+          dir: git-clone-master
+          path: sh
+          args:
+           - -exc
+           - terraform init; terraform plan -out=terraform.tfplan
+        outputs:
+         - name: git-clone-master
+    - task: run-terraform-apply
+      image: terraform-image
+      config:
+        platform: linux
+        inputs: 
+        - name: git-clone-master
+        params:
+         GOOGLE_CREDENTIALS: ((dev/tf_service_account_json))
+        run:
+          dir: git-clone-master
+          path: sh
+          args:
+           - -exc
+           - terraform apply terraform.tfplan
+     # on_failure:
+      #  params:
+      #    text: |
+      #      Pipeline $BUILD_PIPELINE_NAME
+      #      :warning: Error found in IAC - migration-mck-dashboard repo
+      #  put: notify-error
+      #on_success:
+      #  params:
+      #    text: |
+      #      Pipeline $BUILD_PIPELINE_NAME
+       #     :thumbsup: Changes are successfully deployed from IAC - migration-mck-dashboard repo
+       # put: notify-success 
