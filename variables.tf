@@ -177,7 +177,7 @@ EOF
     GROUP BY Source, date
 EOF
     cloud_physics_data = <<EOF
-    SELECT Tags, Application,	VM_State,Guest_OS,Process,Local_IP, 
+    SELECT VM_Name, Tags, Application,	VM_State,Guest_OS,Process,Local_IP, 
     Local_Port, Formatted_Local_Port,Protocol,Target_Name,Target_Application,			
     Target_IP,Target_Port	,Formatted_Target_Port,Target_Address,State,
     PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date
@@ -200,7 +200,7 @@ variable "log_name" {
 
 variable "log_filter" {
   type        = string
-  default     = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"us-central1\" textPayload:\"crash\" OR \"failed\""
+  default     = "resource.type=\"cloud_function\" resource.labels.function_name=\"dashboard_update\" resource.labels.region=\"northamerica-northeast1\" textPayload:\"crash\" OR \"failed\""
   description = "Filter for the alert to look for in the logs"
 }
 
