@@ -9,13 +9,13 @@ resources:
   source:
     uri: git@github.com:mckesson/migration-mck-dashboard.git
     branch: develop
-    private_key: ((dev/github_private_key.private_key))	
+    private_key: ((ci-cd/ssh-github.private_key))	
 - name: git-clone-master
   type: git
   source:
     uri: git@github.com:mckesson/migration-mck-dashboard.git
     branch: master
-    private_key: ((dev/github_private_key.private_key))	
+    private_key: ((ci-cd/ssh-github.private_key))	
 #- name: notify-error
 #  source:
 #    url: ((teams-fail))
