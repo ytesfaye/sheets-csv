@@ -86,7 +86,7 @@ variable "sheet_information" {
       },
       {
         name  = "dc_all"
-        range = "Master Server Inventory!A1:BZ1000"
+        range = "Master Server Inventory!A1:ZZ1000"
       }
     ]
   }
