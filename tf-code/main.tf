@@ -12,59 +12,8 @@ resource "google_storage_bucket_object" "archive" {
   source = "files/Archive.zip"
 }
 
-/******************************************
- Service Account and permissions to run 
- the function.
- *****************************************/
-#resource "google_service_account" "service_account" {
-#  account_id   = "${var.prefix}-${var.cf_service_account_name}"
-#  display_name = var.cf_service_account_name
-#  project      = var.project_id
-#}
-
-#resource "google_project_iam_binding" "router-updater-role-membership" {
-#  for_each = var.cf_service_account_roles
-
-#  project = var.project_id
-#  role    = each.value
-#  members = ["serviceAccount:${google_service_account.service_account.email}"]
-#}
-
-# Configure networking requirements
-#module "networking" {
-#  source     = "./modules/networking"
-#  project_id = var.project_id
-#  region     = var.region
-#  subnet_ip  = var.cf_subnet_ip
-#}
-
-resource "google_project_service" "pubsub" {
- project = var.project_id
- service = "pubsub.googleapis.com"
- disable_dependent_services = true
-}
-
-resource "google_project_service" "cloud_scheduler" {
- project = var.project_id
- service = "cloudscheduler.googleapis.com"
- disable_dependent_services = true
-}
-
-#resource "google_app_engine_application" "app" {
-#  project     = var.project_id
-#  location_id = var.app_location
-#}
-
-# ensures the api is active and ready before deploying vpc connector
-resource "null_resource" "resource-to-wait-on" {
-  provisioner "local-exec" {
-    command = "sleep ${local.wait-time}"
-  }
-  depends_on = [google_project_service.pubsub, google_project_service.cloud_scheduler]
-}
-
 resource "google_pubsub_topic" "dashboard_topic" {
-  name    = "dashboard-update"
+  name    = var.pubsub_topic
   project = var.project_id
 
   labels = local.lower_case_labels
@@ -75,26 +24,24 @@ module "cloud_function" {
   source                = "./modules/function"
   project_id            = var.project_id
   bucket_name           = google_storage_bucket.bucket.name
-  #connector_name        = module.networking.connector_name
   object_name           = google_storage_bucket_object.archive.name
   region                = var.region
   service_account_email = var.cf_service_account_email
   pubsub_topic_id       = google_pubsub_topic.dashboard_topic.id
   entry_point           = "sheet_pubsub"
-  function_name         = "dashboard_update"
+  function_name         = var.function_name
+  function_mem_amount   = var.function_mem_amount
   environment_variables = {}
 }
 
 module "cloud_scheduler" {
-  source                = "./modules/scheduler"
-  name                  = "gcp-dashboard-scheduler-001"
-  target                = module.cloud_function.url
-  project_id            = var.project_id
-  region                = var.region
-  service_account_email = var.cf_service_account_email
-  pubsub_topic_id       = google_pubsub_topic.dashboard_topic.id
-  pub_message           = jsonencode(var.sheet_information)
-  description           = "Scheduler to keep the dashboard up-to-date."
+  source          = "./modules/scheduler"
+  name            = "mck-dashboard-scheduler-001"
+  project_id      = var.project_id
+  region          = var.region
+  pubsub_topic_id = google_pubsub_topic.dashboard_topic.id
+  pub_message     = jsonencode(var.sheet_information)
+  description     = "Scheduler to keep the dashboard up-to-date."
 }
 
 module "bigquery" {
@@ -110,11 +57,22 @@ module "alerts" {
   source                  = "./modules/alerts"
   project_id              = var.project_id
   log_name                = var.log_name
-  log_filter              = var.log_filter
+  region                  = var.region
+  function_name           = var.function_name
   workspace_id            = var.project_id
   notification_email_list = var.notification_email_list
   display_name            = var.display_name
   duration                = var.duration
   comparison              = var.comparison
   threshold_value         = var.threshold_value
+}
+
+module "cloud_physics_scheduler" {
+  source          = "./modules/scheduler"
+  name            = "mck-cloud-physics-data-001"
+  project_id      = var.project_id
+  region          = var.region
+  pubsub_topic_id = google_pubsub_topic.dashboard_topic.id
+  pub_message     = jsonencode(var.cloud_physics_sheet_info)
+  description     = "Scheduler to import cloud physics data to BQ."
 }

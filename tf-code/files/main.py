@@ -146,7 +146,7 @@ def main():
     # The ID and range of a sample spreadsheet.
     sample_data = {
         "sheet_id" : "1oRULNbJj5sG7HsVvA4ySD5w3LOX_P_-g5nvazkk2z58",
-        "data_set" : "mig-dashboard-dev-e918.mck_dc_workloads",
+        "data_set" : "mig-dashboard-dev-e918.mck_dashboard_data",
         "sheets" : [
                 {"name": "dc_cogent", "range": "Cogent Dashboard!F1:J25"},
                 {"name": "dc_markham", "range": "Markham Dashboard!F1:J25"},

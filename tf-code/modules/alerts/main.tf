@@ -5,7 +5,7 @@ locals {
 resource "google_logging_metric" "function_metric" {
   project = var.project_id
   name    = var.log_name
-  filter  = var.log_filter
+  filter  = "resource.type=\"cloud_function\" resource.labels.function_name=\"${var.function_name}\" resource.labels.region=\"${var.region}\" textPayload:\"crash\" OR \"failed\""
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
@@ -38,14 +38,13 @@ resource "google_monitoring_alert_policy" "function_alert_policy" {
   conditions {
     display_name = var.display_name
     condition_threshold {
-      filter          = "metric.type=\"logging.googleapis.com/user/cloud-function-log-metrics\" AND resource.type=\"cloud_function\""
+      filter          = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.function_metric.name}\" AND resource.type=\"cloud_function\""
       duration        = var.duration
       comparison      = var.comparison
       threshold_value = var.threshold_value
       aggregations {
-        alignment_period     = var.alignment_period
-        per_series_aligner   = var.per_series_aligner
-        cross_series_reducer = var.cross_series_reducer
+        alignment_period   = var.alignment_period
+        per_series_aligner = var.per_series_aligner
       }
       trigger {
         count = 1

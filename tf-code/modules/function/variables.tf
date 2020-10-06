@@ -18,10 +18,11 @@ variable "object_name" {
   description = "Zip name within the bucket with the source code."
 }
 
-#variable "connector_name" {
-#  type        = string
-#  description = "VPC connector name for the function to have network connectivity."
-#}
+variable "function_mem_amount" {
+  type        = number
+  default     = 256
+  description = "Amount of memory to allocate to the cloud function."
+}
 
 variable "service_account_email" {
   type        = string
@@ -35,22 +36,16 @@ variable "pubsub_topic_id" {
 
 variable "function_name" {
   type        = string
-  default     = "gcp-route-updates"
-  description = "Name of the function"
+  description = "Name of the Cloud Function"
 }
 
 variable "entry_point" {
   type        = string
-  default     = "route_pubsub"
-  description = "Function that serves the entry point." 
+  description = "The specific entry function that serves as the entry point."
 }
 
 variable "environment_variables" {
-    type    = map(string)
-    default = {
-      _ROUTES_PREFIX  = "google-route-"
-      _ROUTE_PRIORITY = 100
-      _NEXT_HOP       = "default-internet-gateway"
-    }
-    description = "Environment variables for the function"
-  }
+  type        = map(string)
+  default     = {}
+  description = "Environment variables for the function"
+}
