@@ -77,7 +77,7 @@ module "cloud_physics_scheduler" {
   description     = "Scheduler to import cloud physics data to BQ."
 }
 
-module "cloud_physics_scheduler" {
+module "smart_sheet_scheduler" {
   source          = "./modules/scheduler"
   name            = "mck-smart-sheet-data-001"
   project_id      = var.project_id
