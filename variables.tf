@@ -112,6 +112,25 @@ variable "cloud_physics_sheet_info" {
   description = "The Google Sheet ID, bigquery dataset to upload the sheet id to, and then specific sheets and ranges to read from."
 }
 
+variable "smart_sheet_info" {
+  type = object({
+    sheet_id = string
+    data_set = string
+    sheets   = list(map(string))
+  })
+  default = {
+    sheet_id = "1U0If9686mDjqoj_XybwGdeHS5i7_tEIIJKfHz_J5b18"
+    data_set = "mig-dashboard-dev-e918.mck_dashboard_data"
+    sheets = [
+      {
+        name  = "mck-smart-sheet-dash"
+        range = "Import!A1:N6000"
+      }
+    ]
+  }
+  description = "The Google Sheet ID, bigquery dataset to upload the sheet id to, and then specific sheets and ranges to read from."
+}
+
 /************************
 bigquery variables 
 **************************/
@@ -208,7 +227,128 @@ EOF
     FROM `mig-dashboard-dev-e918.mck_dashboard_data.mck_cloud_physics_*`
     order by Date   
 EOF
+    mck_smart_sheet_status             = <<EOF
+    SELECT Task_Name, Duration, Start, Finish, Percentage_Complete,
+    Predecessors, Assigned_To, Status, Comments, Predecessor_Offset, Start_Offset, 
+    Duration_Offset, Sort_Index, Application_Name as Application_Name_Raw,
+    SPLIT(Application_Name, ':')[safe_ordinal(1)] AS Application_Name,
+    CASE
+      WHEN SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] = ' Application Risk Assessment'
+        THEN ''
+      WHEN SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] = ' Risk Remediation'
+        THEN ''
+      WHEN SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] like '%OCL%'
+        THEN ''       
+      ELSE SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] 
+    END AS Environment,
+    CASE
+      WHEN SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] = ' Application Risk Assessment'
+        THEN 'Application Risk Assessment'
+      WHEN SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] = ' Risk Remediation'
+        THEN 'Risk Remediation'
+      WHEN SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] like '%OCL%'
+        THEN 'OCL'     
+      ELSE SPLIT(Application_Name, ' - ')[safe_ordinal(2)] 
+    END AS Task_Type,
+    CASE
+      When (Task_Name like 'Request%' or Task_Name like '%Submit%') And Task_Name != 'Submit GCP Instance Backup form'
+        Then 1
+        Else 0 
+    END AS Is_Request,
+    CASE
+      When Task_Name like '%Approve%' or Task_Name like 'Approval of%' or Task_Name = 'Application Security scan conducted (Vericode, Optional)'
+        Then 1
+        Else 0 
+    END AS Is_Approval,
+    CASE 
+      When Task_Name = 'Create Migration Workbook' Then 10
+      When Task_Name = 'Complete ISRM Worksheet' Then 20
+      When Task_Name = 'Schedule migration test' Then 30
+      When Task_Name = 'Submit Migration Change Request' Then 40    
+      When Task_Name = 'Request Project' Then 50
+      When Task_Name = 'Request Service Account' Then 60
+      When Task_Name = 'Request Terraform Service Account' Then 70
+      When Task_Name = 'Request Terraform Service Account Permissions' Then 80
+      When Task_Name = 'Configure M4CE data replication to GCP' Then 90
+      When Task_Name = 'Initiate M4CE data replication to GCP' Then 100
+      When Task_Name = 'Create Concourse Pipeline' Then 110
+      When Task_Name = 'Write Terraform code' Then 120
+      When Task_Name = 'Schedule Migration' Then 130
+      Else 0
+    END AS Milestone_Task,
+    PARSE_DATE('%Y%m%d',_TABLE_SUFFIX) as Date
+    FROM `mig-dashboard-dev-e918.mck_dashboard_data.mck-smart-sheet-dash_*`
+    order by Date  
+EOF
+    mck_smart_sheet_status_approval_dependencies             = <<EOF
+    SELECT Distinct Application_Name,Task_Name,
+    Case When Task_Name =  'Request Approval of Proposed Architecture' THEN 'Approval of Proposed Architecture'
+      When Task_Name =  'Request Terraform Service Account Permissions' THEN 'Approve Terraform Service Account Permissions'
+      When Task_Name =  'Request Application Scans (Rapid7, Vericode)' THEN 'Application Security scan conducted (Vericode, Optional)'
+      When Task_Name =  'Request Marketplace Whitelist (optional)' THEN 'Approve Marketplace Whitelist (optional)'
+      When Task_Name =  'Request Project' THEN 'Approve and Create Project'
+      When Task_Name =  'Request Net New Server Name' THEN 'Approve Net New Server Name Request'
+      When Task_Name =  'Request Service Account' THEN 'Approve and Create Service Account'
+      When Task_Name =  'Request Firewall Rules' THEN 'Approve Firewall Rules'
+      When Task_Name =  'Request Terraform Service Account' THEN 'Approve Terraform Service Account'
+      When Task_Name =  'Request Certificate (Optional)' THEN 'Approve Certificate (Optional)'
+      When Task_Name =  'Submit External Access Approval Request' THEN 'Approve External Access Request'
+      When Task_Name =  'Submit Migration Change Request' THEN 'Approve Migration Change Request'
+      ELSE "" 
+    END As Approval_Dependency
+    FROM `mig-dashboard-dev-e918.mck_dashboard_data.mck_smart_sheet_status` 
+    WHERE
+    Is_Request = 1   
+EOF
+   mck_smart_sheet_status_approvals_with_dependency_data             = <<EOF
+    Select Distinct consolidated.*
+    ,org2.Start as Dep_Start
+    ,org2.Finish as Dep_Finish
+    ,org2.Assigned_To as Dep_Assigned_To
+    ,org2.Percentage_Complete as Dep_Percentage_Complete
+    ,org2.Status as Dep_Status
+    ,org2.Comments as Dep_Comments
+    FROM
+    (
+      SELECT
+      all_data.*
+      ,dep.Approval_Dependency
+      FROM (
+        Select
+        *
+        FROM
+        `mig-dashboard-dev-e918.mck_dashboard_data.mck_smart_sheet_status` org
+        ) all_data  
+        LEFT Join `mig-dashboard-dev-e918.mck_dashboard_data.mck_smart_sheet_status_approval_dependencies` dep
+        ON all_data.Task_Name = dep.Task_Name
+      Order by all_data.Application_NAme
+    ) consolidated
 
+    JOIN `mig-dashboard-dev-e918.mck_dashboard_data.mck_smart_sheet_status` org2
+    ON org2.Task_Name = consolidated.Approval_Dependency 
+    WHERE consolidated.Application_Name_Raw = org2.Application_Name_Raw
+    AND consolidated.Date = org2.Date  
+EOF
+   mck_smart_sheet_enhanced             = <<EOF
+    SELECT 
+    org.*,
+    CASE 
+      WHEN org.Application_Name_Raw != '' and org.Application_Name_Raw not like '%:%'
+        Then org.Application_Name_Raw
+      Else ''
+    END as Application_Header
+    ,dep.Approval_Dependency
+    ,dep.Dep_Start
+    ,dep.Dep_Finish
+    ,dep.Dep_Assigned_To
+    ,dep.Dep_Percentage_Complete
+    ,dep.Dep_Status
+    ,dep.Dep_Comments
+    FROM `mig-dashboard-dev-e918.mck_dashboard_data.mck_smart_sheet_status` org
+    LEFT OUTER JOIN `mig-dashboard-dev-e918.mck_dashboard_data.mck_smart_sheet_status_approvals_with_dependency_data` dep
+    ON  org.Application_Name_Raw = dep.Application_Name_Raw AND org.Task_Name = dep.Task_Name AND org.Environment = dep.Environment AND org.Date = dep.Date
+    Order by org.Date 
+EOF
   }
 }
 

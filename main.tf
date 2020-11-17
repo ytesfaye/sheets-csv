@@ -76,3 +76,13 @@ module "cloud_physics_scheduler" {
   pub_message     = jsonencode(var.cloud_physics_sheet_info)
   description     = "Scheduler to import cloud physics data to BQ."
 }
+
+module "smart_sheet_scheduler" {
+  source          = "./modules/scheduler"
+  name            = "mck-smart-sheet-data-001"
+  project_id      = var.project_id
+  region          = var.region
+  pubsub_topic_id = google_pubsub_topic.dashboard_topic.id
+  pub_message     = jsonencode(var.smart_sheet_info)
+  description     = "Scheduler to import smart sheet data to BQ."
+}
