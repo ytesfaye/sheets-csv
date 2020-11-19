@@ -124,7 +124,7 @@ variable "smart_sheet_info" {
     sheets = [
       {
         name  = "mck-smart-sheet-dash"
-        range = "Import!A1:N6000"
+        range = "Import!A1:O6000"
       }
     ]
   }
