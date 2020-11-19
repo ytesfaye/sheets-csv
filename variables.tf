@@ -124,7 +124,7 @@ variable "smart_sheet_info" {
     sheets = [
       {
         name  = "mck-smart-sheet-dash"
-        range = "Import!A1:N6000"
+        range = "Import!A1:O6000"
       }
     ]
   }
@@ -232,6 +232,7 @@ EOF
     Predecessors, Assigned_To, Status, Comments, Predecessor_Offset, Start_Offset, 
     Duration_Offset, Sort_Index, Application_Name as Application_Name_Raw,
     SPLIT(Application_Name, ':')[safe_ordinal(1)] AS Application_Name,
+    Data_Center,
     CASE
       WHEN SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] = ' Application Risk Assessment'
         THEN ''
