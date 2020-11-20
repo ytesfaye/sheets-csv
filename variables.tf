@@ -335,7 +335,7 @@ EOF
    mck_smart_sheet_enhanced             = <<EOF
     SELECT 
     org.*,
-    ,org.Operational_Readiness_Checklist
+    ,org.Operational_Readiness_Checklist,
     CASE 
       WHEN org.Application_Name_Raw != '' and org.Application_Name_Raw not like '%:%'
         Then org.Application_Name_Raw
