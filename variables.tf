@@ -232,7 +232,7 @@ EOF
     Predecessors, Assigned_To, Status, Comments, Predecessor_Offset, Start_Offset, 
     Duration_Offset, Sort_Index, Application_Name as Application_Name_Raw,
     SPLIT(Application_Name, ':')[safe_ordinal(1)] AS Application_Name,
-    Data_Center, Operational_Readiness_Checklist
+    Data_Center, Operational_Readiness_Checklist,
     CASE
       WHEN SPLIT(SPLIT(Application_Name, ':')[safe_ordinal(2)], " - ")[safe_ordinal(1)] = ' Application Risk Assessment'
         THEN ''
@@ -331,7 +331,7 @@ EOF
     AND consolidated.Date = org2.Date  
 EOF
    mck_smart_sheet_enhanced             = <<EOF
-    SELECT org.*, org.Operational_Readiness_Checklist
+    SELECT org.*, org.Operational_Readiness_Checklist,
     CASE 
       WHEN org.Application_Name_Raw != '' and org.Application_Name_Raw not like '%:%'
         Then org.Application_Name_Raw
